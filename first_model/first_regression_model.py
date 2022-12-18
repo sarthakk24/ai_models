@@ -4,7 +4,8 @@ import pandas as pd
 import os 
 import math
 
-
+import warnings
+warnings.filterwarnings("ignore", category=RuntimeWarning)
 # def compute_gradient_descent(w , b ) :
 
 def compute_model_output(features , w , b ) :
@@ -21,7 +22,7 @@ def compute_cost_function(target , estimations):
     m = target.shape[0]
     val = 0
     for i in range(m):
-        val += math.pow(estimations[i] - target[i] , 2)
+        val += math.pow(estimations[i] - target[i] , 2) # type: ignore
     return 1/ (2 * m) * val
 
 def compute_gradient(features , targets , w , b) :
@@ -49,7 +50,6 @@ def gradient_descent(features , target , w_initial , b_initial , alpha , num_ite
     
     for i in range(num_iters):
         # Calculate the gradient and update the parameters using gradient_function
-        estimations = compute_model_output(features , w , b)
         dj_dw, dj_db = gradient_function(features, target, w , b)     
 
         # Update Parameters using equation (3) above
@@ -58,6 +58,7 @@ def gradient_descent(features , target , w_initial , b_initial , alpha , num_ite
 
         # Save cost J at each iteration
         if i<100000:      # prevent resource exhaustion 
+            estimations = compute_model_output(features , w , b)
             J_history.append( cost_function(features ,  estimations))
             p_history.append([w,b])
         # Print cost every at intervals 10 times or as many iterations if < 10
@@ -99,15 +100,16 @@ plt.xlabel('Scores')
 plt.show()
 
 # setting the values of weights in the model 
-w = 9.776e+00
-b = 2.48367e+00
+w = 0
+b = 0
 tmp_alpha = 1.0e-2
-iterations = 10000
+iterations = 1000
 
-# w_final, b_final, J_hist, p_hist = gradient_descent(features ,target, w, b, tmp_alpha, iterations, compute_cost_function, compute_gradient)
+w_final, b_final, J_hist, p_hist = gradient_descent(features ,target, w, b, tmp_alpha, iterations, compute_cost_function, compute_gradient)
 
-estimations = compute_model_output(features , w , b)
+estimations = compute_model_output(features , w_final , b_final)
 j_wb = compute_cost_function(target , estimations)
+
 # plotting our predictions line 
 plt.plot(features, estimations, c='b',label=f"Our Prediction j_wb : {j_wb}")
 plt.scatter(features,target, marker='*', c='r',label='Actual Values') # type: ignore
@@ -116,6 +118,5 @@ plt.ylabel('Hours spent')
 plt.xlabel('Scores')
 plt.legend()
 plt.show()
-
-print(m)
+# print(w_final , b_final )
 
